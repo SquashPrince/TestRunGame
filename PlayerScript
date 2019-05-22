@@ -1,0 +1,80 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class PlayerScript : MonoBehaviour {
+
+    public float m_fSpeed = 10.0f;
+    public float m_fJumpPower = 12.0f;
+
+    public GameObject Director;
+
+    public int MaxJumpCount = 3;
+    public int CurJumpCount = 3;
+
+    private Rigidbody m_Rigid = null;
+    
+    public AudioClip getCoinWav;
+    AudioSource WavPlayer;
+
+    void JumpReset()
+    {
+        CurJumpCount = MaxJumpCount;
+    }
+
+	void Awake () {
+        JumpReset();
+        m_Rigid = GetComponent<Rigidbody>();
+        Director = GameObject.Find("GameDirector");
+        WavPlayer = GetComponent<AudioSource>();
+	}
+	
+	void Update () {
+
+        if (CurJumpCount != 0) {
+            if (true == Input.GetKeyDown(KeyCode.Space))
+            {
+                if(null != m_Rigid)
+                {
+                    m_Rigid.velocity = Vector3.zero;
+
+                    m_Rigid.AddForce(new Vector3(0, m_fJumpPower, 0),ForceMode.Impulse);
+                }
+                --CurJumpCount;
+            }
+        }
+
+        transform.position += new Vector3(m_fSpeed * Time.deltaTime, 0f, 0f);
+
+    }
+
+    void OnCollisionEnter(Collision _col)
+    {
+        if(_col.gameObject.layer == 9)
+        {
+            // 평면의 방정식(유니티 지원)
+            // 직선의 방정식
+
+            // 평면을 구성하기 위해서는 가장 기본적으로 2개의 벡터가 필요하다.
+            // 평면위의 점(1)과 평면 위의 수직인 점(2)이 필요하다.
+            Plane CheckPlane = new Plane(_col.gameObject.transform.up/*2*/, _col.gameObject.transform.position/*(1)*/);
+
+            float Dis = CheckPlane.GetDistanceToPoint(transform.position);
+
+            if (Dis > 0f)
+            {
+                JumpReset();
+            }
+        }
+    }
+
+    void OnTriggerEnter(Collider _col)
+    {
+        if(_col.gameObject.layer == 10)
+        {
+            this.Director.GetComponent<DirectorScript>().GetCoin();
+            WavPlayer.PlayOneShot(getCoinWav);
+            _col.gameObject.SetActive(false);
+        }
+    }
+}
