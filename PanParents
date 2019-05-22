@@ -1,0 +1,110 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class PanParents : MonoBehaviour {
+
+    public int PanCount = 30;
+    public int CoinCount = 0;
+
+    int m_CurActivePan = 0;
+    int m_ActiveCoin = 0;
+
+    public GameObject PanPrefab = null;
+    public GameObject CoinPrefab = null;
+
+    public GameObject[] ArrPan = null;
+    public GameObject[] ArrCoin = null;
+
+    public Vector3 LastPanPos = Vector3.zero;
+    public GameObject Player = null;
+
+	void Awake () {
+        PanPrefab = Resources.Load<GameObject>("Prefab/ActivePan");
+        CoinPrefab = Resources.Load<GameObject>("Prefab/Coin");
+
+        if (PanPrefab == null)
+        {
+            return;
+        }
+        if (CoinPrefab == null)
+        {
+            return;
+        }
+        if (Player == null)
+        {
+            return;
+        }
+
+        LastPanPos = Player.transform.position;
+
+        ArrPan = new GameObject[PanCount];
+
+        for(int i = 0; i < ArrPan.Length; i++)
+        {
+           ArrPan[i] = GameObject.Instantiate<GameObject>(PanPrefab);
+           ArrPan[i].transform.SetParent(transform);
+           ArrPan[i].SetActive(false);
+        }
+
+        CoinCount = PanCount * 9;
+
+        ArrCoin = new GameObject[CoinCount];
+
+        for (int i = 0; i < ArrCoin.Length; i++)
+        {
+            ArrCoin[i] = GameObject.Instantiate<GameObject>(CoinPrefab);
+            ArrCoin[i].transform.SetParent(transform);
+            ArrCoin[i].SetActive(false);
+        }
+
+        LastPanPos = new Vector3(3, 0, 0);
+    }
+
+    void Update()
+    {
+        if (LastPanPos.x <= Player.transform.position.x + 30f)
+        {
+            ArrPan[m_CurActivePan].SetActive(true);
+
+            Vector3 RandomPos = Vector3.zero;
+            Vector3 RandomRot = Vector3.zero;
+
+            RandomPos.x = LastPanPos.x + Random.Range(8f, 16f);
+            RandomPos.y = Random.Range(-2f, 2f);
+            
+            RandomRot.z = Random.Range(-30f, 30f);
+
+            ArrPan[m_CurActivePan].transform.position = RandomPos;
+            ArrPan[m_CurActivePan].transform.eulerAngles = RandomRot;
+
+            LastPanPos = RandomPos;
+
+            Vector3 StartPanCoinPos = LastPanPos;
+
+            StartPanCoinPos += ArrPan[m_CurActivePan].transform.up;
+            StartPanCoinPos -= ArrPan[m_CurActivePan].transform.right * 4;
+
+            for(int i = 0; i < 9; i++)
+            {
+                ArrCoin[m_ActiveCoin].SetActive(true);
+                ArrCoin[m_ActiveCoin].transform.position = StartPanCoinPos;
+                StartPanCoinPos += ArrPan[m_CurActivePan].transform.right;
+                m_ActiveCoin += 1;
+            }
+
+            m_CurActivePan += 1;
+
+            if (m_CurActivePan >= PanCount)
+            {
+                m_CurActivePan = 0;
+            }
+
+            if (m_ActiveCoin >= CoinCount)
+            {
+                m_ActiveCoin = 0;
+            }
+        }
+    }
+
+}
