@@ -1,0 +1,53 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+
+
+public class GameScene : MonoBehaviour {
+    public string StartScene;
+    public string Retry;
+
+    public float Ready = 0;
+    public int count;
+
+    GameObject ReadyStart;
+
+    public void GoToStart()
+    {
+        SceneManager.LoadScene(StartScene);
+    }
+
+    public void RetryGame()
+    {
+        SceneManager.LoadScene(Retry);
+    }
+
+    void Start()
+    {
+        ReadyStart = GameObject.Find("CountDown");
+    }
+
+    void Update()
+    {
+        if(Ready < 3)
+        {
+            Ready += 1 * Time.fixedDeltaTime;
+            count = (int)Ready + 1;
+            ReadyStart.GetComponent<Text>().text = "Ready~\n" + (4 - count).ToString();
+            Time.timeScale = 0;
+        }
+        if(Ready >= 3)
+        {
+            Ready += 1 * Time.fixedDeltaTime;
+            ReadyStart.GetComponent<Text>().text = "Start!";
+            Time.timeScale = 1;
+        }
+        if (5 <= Ready)
+        {
+            ReadyStart.SetActive(false);
+            Ready = 5;
+        }
+    }
+}
