@@ -1,0 +1,17 @@
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class StartScene : MonoBehaviour {
+    public string GameScene;
+
+    public void LOADGame()
+    {
+        SceneManager.LoadScene(GameScene);
+    }
+
+    public void EXITGame()
+    {
+        print("Quit!!");
+        Application.Quit();
+    }
+}
