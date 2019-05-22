@@ -1,0 +1,17 @@
+using UnityEngine;
+
+public class CameraScript : MonoBehaviour {
+
+    public float m_fPlayerInterval = 3.0f;
+    public float m_fZPos = -10.0f;
+
+    public GameObject PlayerObject = null;
+
+    void Update () {
+
+        if(null != PlayerObject)
+        {
+            transform.position = new Vector3(PlayerObject.transform.position.x + m_fPlayerInterval, 0, m_fZPos);
+        }
+    }
+}
