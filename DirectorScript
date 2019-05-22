@@ -1,0 +1,116 @@
+using UnityEngine;
+using UnityEngine.UI;
+
+public class DirectorScript : MonoBehaviour {
+
+    public GameObject PointText;
+    public GameObject TimeText;
+    public GameObject GameResult;
+
+    public GameObject Player;
+    public GameObject Camera;
+
+    int point = 0;
+    float timer = 0f;
+    float result = 0f;
+
+    float P_Speed;
+    public float LV_Speed = 1.0f;
+    public float LV_Camera = -25f;
+
+    public void GetCoin()
+    {
+        point += 10;
+    }
+
+    void Awake () {
+        PointText = GameObject.Find("Point");
+        TimeText = GameObject.Find("Timer");
+        GameResult = GameObject.Find("GameResult");
+
+        Player = GameObject.Find("Player");
+        Camera = GameObject.Find("Main Camera");
+
+        P_Speed = Player.GetComponent<PlayerScript>().m_fSpeed;
+
+    }
+
+	void Update () {
+
+
+        if (Player.transform.position.y >= -25)
+        {
+            timer += 1 * Time.deltaTime;
+        }
+
+        this.TimeText.GetComponent<Text>().text = this.timer.ToString("F2");
+        this.PointText.GetComponent<Text>().text = this.point.ToString() + " P ";
+
+        LevelSystem();
+
+        if(Player.transform.position.y <= -25)
+        {
+            P_Speed = 0;
+            result = timer;
+            this.GameResult.GetComponent<Text>().text = "GameOver\n" + this.point.ToString() + " P" + "\n" + this.result.ToString("F2");
+            Camera.GetComponent<AudioSource>().Pause();
+        }
+    }
+
+    void LevelSystem()
+    {
+        if(1000 <= this.point && this.point < 2000)
+        {
+            if (LV_Speed <= 1.25f)
+            {
+                LV_Speed += 0.05f * (Time.deltaTime * 4);
+                Player.GetComponent<PlayerScript>().m_fSpeed = P_Speed * LV_Speed;
+            }
+        }
+        if (2000 <= this.point && this.point < 3000)
+        {
+            if (LV_Speed <= 1.5f)
+            {
+                LV_Speed += 0.05f * (Time.deltaTime * 4);
+                Player.GetComponent<PlayerScript>().m_fSpeed = P_Speed * LV_Speed;
+            }
+        }
+        if (3000 <= this.point && this.point < 3500)
+        {
+            if (LV_Camera <= -20f)
+            {
+                LV_Camera += 0.5f * (Time.deltaTime * 4);
+                Camera.GetComponent<CameraScript>().m_fZPos = LV_Camera;
+            }
+        }
+        if (3500 <= this.point && this.point < 4500)
+        {
+            if (LV_Speed <= 1.75f)
+            {
+                LV_Speed += 0.05f * (Time.deltaTime * 4);
+                Player.GetComponent<PlayerScript>().m_fSpeed = P_Speed * LV_Speed;
+            }
+        }
+        if (4500 <= this.point && this.point < 6000)
+        {
+            if (LV_Camera <= -15f)
+            {
+                LV_Camera += 0.5f * (Time.deltaTime * 4);
+                Camera.GetComponent<CameraScript>().m_fZPos = LV_Camera;
+            }
+        }
+        if (6000 <= this.point)
+        {
+            if (LV_Speed <= 2.0f)
+            {
+                LV_Speed += 0.05f * (Time.deltaTime * 4);
+                Player.GetComponent<PlayerScript>().m_fSpeed = P_Speed * LV_Speed;
+            }
+            if (LV_Camera >= -20f)
+            {
+                LV_Camera -= 0.5f * (Time.deltaTime * 4);
+                Camera.GetComponent<CameraScript>().m_fZPos = LV_Camera;
+            }
+        }
+    }
+}
